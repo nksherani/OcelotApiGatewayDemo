@@ -1,0 +1,52 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/v1/users",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 55087
+        }
+      ],
+      "UpstreamPathTemplate": "/GetUsers",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "Key": "Users"
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/products",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 62345
+        }
+      ],
+      "UpstreamPathTemplate": "/GetProducts",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "Key": "Products"
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Products",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 62345
+        }
+      ],
+      "UpstreamPathTemplate": "/GetProductsAUth",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]//,
+      //"AuthenticationOptions": {
+      //  "AuthenticationProviderKey": "IdentityApiKey",
+      //  "AllowedScopes": []
+      //}
+    }
+
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:44399"//,
+    //"RequestIdKey": "OcRequestId",
+   // "AdministrationPath": "/administration"
+  }
+}
