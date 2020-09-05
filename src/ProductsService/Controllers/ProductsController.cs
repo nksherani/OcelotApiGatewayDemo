@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace ProductsService.Controllers
 {
+    [Authorize(Policy = "PublicSecure")]
+    //[Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class ProductsController : ControllerBase
@@ -23,7 +25,7 @@ namespace ProductsService.Controllers
         {
             _logger = logger;
         }
-        [Authorize]
+       
         [HttpGet]
         public IEnumerable<string> Get()
         {

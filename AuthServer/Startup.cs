@@ -29,8 +29,9 @@ namespace AuthServer
             services.AddIdentityServer().AddDeveloperSigningCredential().AddOperationalStore(options =>
             {
                 options.EnableTokenCleanup = true;
-                options.TokenCleanupInterval = 30;
+                options.TokenCleanupInterval = 3600;
             })
+
                 .AddInMemoryApiScopes(Config.GetApiScopes())
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryClients(Config.GetClients());

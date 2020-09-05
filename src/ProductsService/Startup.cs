@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ProductsService
 {
@@ -30,12 +31,20 @@ namespace ProductsService
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                
             })
                 .AddJwtBearer(o =>
                 {
                     o.Authority = "https://localhost:44311";//auth server address
                     o.Audience = "myresourceapi";
                     o.RequireHttpsMetadata = false;
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        //ValidateIssuerSigningKey = true,
+                        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuer = true,
+                        ValidateAudience = false
+                    };
                 });
             services.AddAuthorization(options =>
             {
@@ -51,12 +60,14 @@ namespace ProductsService
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
+            
+
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
