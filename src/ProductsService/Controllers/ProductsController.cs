@@ -8,8 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace ProductsService.Controllers
 {
-    [Authorize(Policy = "PublicSecure")]
-    //[Authorize]
+    [Authorize(Policy = "PublicSecure2")]
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class ProductsController : ControllerBase

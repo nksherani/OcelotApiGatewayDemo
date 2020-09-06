@@ -47,6 +47,7 @@ namespace AuthServer.ConfigStore
 
             var identityResourceEntity = new IdentityResourceEntity() { ID = "naveed", IdentityResourceName = "naveed", IdentityResourceData = JsonConvert.SerializeObject(identityResource) };
 
+
             context.Add(identityResourceEntity);
             context.Add(resourceEntity);
             context.Add(scopeEntity);

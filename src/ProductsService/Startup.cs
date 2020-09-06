@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -56,19 +58,20 @@ namespace ProductsService
                 {
                     //o.Authority = "https://localhost:44311";//auth server address
                     o.Authority = customConfiguration.TokenAuthority;
-                    o.Audience = "myresourceapi";//not used to validate
+                    o.Audience = "ProductsApi";//not used to validate
                     o.RequireHttpsMetadata = false;
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
-                        //ValidateIssuerSigningKey = true,
-                        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("somethingyouwantwhichissecurewillworkk")),
                         ValidateIssuer = true,
-                        ValidateAudience = false
+                        ValidateAudience = true
                     };
                 });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("PublicSecure", policy => policy.RequireClaim("client_id"));
+                //options.AddPolicy("PublicSecure1", policy => policy.RequireClaim("client_id"));
+                options.AddPolicy("PublicSecure2", policy => policy.RequireClaim(ClaimTypes.Email));
             });
         }
 

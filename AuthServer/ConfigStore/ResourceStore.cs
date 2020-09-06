@@ -1,6 +1,7 @@
 ﻿using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,10 +68,19 @@ namespace AuthServer.ConfigStore
 
 
             var apiResources = new List<ApiResource>();
-            var apiResourcesEntities = from i in _context.ApiResources
-                                       where scopeNames.Contains(i.ApiResourceName)
-                                       select i;
-
+            var apiResourcesEntities = new List<ApiResourceEntity>();
+            //var apiResourcesEntities = from i in _context.ApiResources
+            //                           where scopeNames.Contains(i.ApiResourceName)
+            //                           select i;
+            var apiResourcesTemp = _context.ApiResources.ToList();
+            foreach (var rsrc in apiResourcesTemp)
+            {
+                var tmp = JsonConvert.DeserializeObject<ApiResource>(rsrc.ApiResourceData);
+                int count = tmp.Scopes.Select(x => x.Split('.')[1]).Where(x=>scopeNames.Contains(x)).Count();
+                if (count > 0)
+                    apiResourcesEntities.Add(rsrc);
+            }
+                                      
             foreach (var apiResourceEntity in apiResourcesEntities)
             {
                 apiResourceEntity.MapDataFromEntity();
