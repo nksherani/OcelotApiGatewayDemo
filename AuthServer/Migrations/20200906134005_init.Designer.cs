@@ -4,14 +4,16 @@ using AuthServer.ConfigStore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AuthServer.Migrations
 {
     [DbContext(typeof(ConfigurationStoreContext))]
-    partial class ConfigurationStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20200906134005_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,11 +95,11 @@ namespace AuthServer.Migrations
                         .HasAnnotation("SqlServer:IdentitySeed", 1)
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("client_id")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("client_id")
+                        .HasColumnType("int");
 
-                    b.Property<string>("client_secret")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("client_secret")
+                        .HasColumnType("int");
 
                     b.HasKey("ClientID");
 

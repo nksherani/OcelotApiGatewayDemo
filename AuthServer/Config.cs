@@ -41,7 +41,7 @@ namespace AuthServer
             return new List<Client>{
             new Client
             {
-                
+
                 ClientId = "secret_client_id",
                 ClientName = "abc",
                 AllowedGrantTypes = GrantTypes.ClientCredentials,

@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Tokens;
 
@@ -33,6 +34,7 @@ namespace ProductsService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            IdentityModelEventSource.ShowPII = true;
             customConfiguration = new CustomConfiguration();
             Configuration.GetSection("CustomConfiguration").Bind(customConfiguration);
             //Configuration.GetSection
@@ -56,8 +58,8 @@ namespace ProductsService
             })
                 .AddJwtBearer(o =>
                 {
-                    //o.Authority = "https://localhost:44311";//auth server address
-                    o.Authority = customConfiguration.TokenAuthority;
+                    o.Authority = "https://localhost:44311";//auth server address
+                    //o.Authority = customConfiguration.TokenAuthority;
                     o.Audience = "ProductsApi";//not used to validate
                     o.RequireHttpsMetadata = false;
                     o.TokenValidationParameters = new TokenValidationParameters
@@ -70,7 +72,7 @@ namespace ProductsService
                 });
             services.AddAuthorization(options =>
             {
-                //options.AddPolicy("PublicSecure1", policy => policy.RequireClaim("client_id"));
+                options.AddPolicy("PublicSecure1", policy => policy.RequireClaim("client_id"));
                 options.AddPolicy("PublicSecure2", policy => policy.RequireClaim(ClaimTypes.Email));
             });
         }
@@ -87,9 +89,6 @@ namespace ProductsService
             app.UseAuthentication();
             app.UseAuthorization();
 
-            
-
-            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

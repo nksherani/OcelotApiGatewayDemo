@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AuthServer.ConfigStore;
 using AuthServer.Models;
 using AuthServer.Models.AccountViewModels;
+using AuthServer.Models.EFCoreModels;
 using AuthServer.Services;
-using IdentityModel;
+//using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -103,7 +106,39 @@ namespace AuthServer.Controllers
             // If we got this far, something failed, redisplay form
             return BadRequest(model);
         }
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult AuthenticateClient(ClientViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var client =_context.Clients.Where(x => x.client_id == model.client_id && sha256(model.client_secret) == x.client_secret)?.FirstOrDefault();
+                //generate jwt here
+                if(client!=null)
+                {
+                    var token = GenerateClientJSONWebToken(model);
+                    return Ok(token);
+                }
+                
+            }
 
+            // If we got this far, something failed, redisplay form
+            return BadRequest(model);
+        }
+        private string GenerateClientJSONWebToken(ClientViewModel client)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("somethingyouwantwhichissecurewillworkk"));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[] {
+                new Claim("client_id", client.client_id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken("https://localhost:44311", "ProductsApi", claims, expires: DateTime.Now.AddMinutes(120), signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -133,7 +168,36 @@ namespace AuthServer.Controllers
             // If we got this far, something failed, redisplay form
             return BadRequest();
         }
+        public static string sha256(string secret)
+        {
+            SHA256 sha256 = SHA256.Create();
+            StringBuilder hash = new StringBuilder();
+            var crypto = sha256.ComputeHash(Encoding.UTF8.GetBytes(secret));
+            foreach (byte theByte in crypto)
+            {
+                hash.Append(theByte.ToString("x2"));
+            }
+            return hash.ToString();
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterClient([FromBody] ClientViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                
 
+                Client client = new Client() { client_id = model.client_id, client_secret = sha256(model.client_secret) };
+                _context.Add(client);
+                await _context.SaveChangesAsync();
+                return Ok(client);
+                //AddErrors(result);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return BadRequest();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

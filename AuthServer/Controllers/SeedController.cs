@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthServer.ConfigStore;
-using IdentityServer4.EntityFramework.DbContexts;
+//using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +31,7 @@ namespace AuthServer.Controllers
         [Route("[action]")]
         public IActionResult Seed()
         {
-            SeedAuthData.Seed(_dbContext);
+            //SeedAuthData.Seed(_dbContext);
             return Ok(true);
         }
     }

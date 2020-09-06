@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using IdentityServer4.Stores;
+//using IdentityServer4.Stores;
 using System.IO;
 using Microsoft.AspNetCore.Identity;
 using AuthServer.Services;
@@ -36,8 +36,8 @@ namespace AuthServer
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContextPool<ConfigurationStoreContext>(o => o.UseSqlServer(connectionString));
 
-            services.AddTransient<IClientStore, ClientStore>();
-            services.AddTransient<IResourceStore, ResourceStore>();
+            //services.AddTransient<IClientStore, ClientStore>();
+            //services.AddTransient<IResourceStore, ResourceStore>();
 
             services.AddSingleton<IEmailSender,EmailSender>();
             
@@ -49,12 +49,15 @@ namespace AuthServer
                 .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
-                //.AddSigningCredential(cert)
+            //    //.AddSigningCredential(cert)
                 .AddDeveloperSigningCredential()
-                .AddResourceStore<ResourceStore>()
-                .AddClientStore<ClientStore>()
-                
-                .AddAspNetIdentity<ApplicationUser>();
+                .AddInMemoryApiResources(Config.GetApiResources())
+                .AddInMemoryApiScopes(Config.GetApiScopes())
+                .AddInMemoryClients(Config.GetClients());
+                //.AddResourceStore<ResourceStore>()
+                //.AddClientStore<ClientStore>();
+
+            //    .AddAspNetIdentity<ApplicationUser>();
             //.AddProfileService<IdentityWithAdditionalClaimsProfileService>();
             services.AddControllers();
 
