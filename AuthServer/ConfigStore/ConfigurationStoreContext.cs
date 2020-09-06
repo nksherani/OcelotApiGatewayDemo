@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +9,7 @@ using System.Threading.Tasks;
 namespace AuthServer.ConfigStore
 {
 
-    public class ConfigurationStoreContext : DbContext
+    public class ConfigurationStoreContext : IdentityDbContext
     {
         public ConfigurationStoreContext(DbContextOptions<ConfigurationStoreContext> options) : base(options)
         { 
@@ -18,6 +20,7 @@ namespace AuthServer.ConfigStore
         public DbSet<ApiResourceEntity> ApiResources { get; set; }
         public DbSet<IdentityResourceEntity> IdentityResources { get; set; }
         public DbSet<ScopeEntity> Scopes { get; set; }
+        //public DbSet<IdentityUser> Users { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

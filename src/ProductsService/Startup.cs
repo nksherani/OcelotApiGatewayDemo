@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ProductsService
@@ -20,23 +22,41 @@ namespace ProductsService
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            
         }
 
         public IConfiguration Configuration { get; }
+        CustomConfiguration customConfiguration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            customConfiguration = new CustomConfiguration();
+            Configuration.GetSection("CustomConfiguration").Bind(customConfiguration);
+            //Configuration.GetSection
+
+            services.Configure<CustomConfiguration>(Configuration);
+
+            //services.AddDbContextPool<ConfigurationStoreContext>(o => o.UseSqlServer(connectionString));
+
+            AddAuthentication(services);
+            services.AddControllers();
+        }
+
+        private void AddAuthentication(IServiceCollection services)
+        {
+            
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                
+
             })
                 .AddJwtBearer(o =>
                 {
-                    o.Authority = "https://localhost:44311";//auth server address
-                    o.Audience = "myresourceapi";
+                    //o.Authority = "https://localhost:44311";//auth server address
+                    o.Authority = customConfiguration.TokenAuthority;
+                    o.Audience = "myresourceapi";//not used to validate
                     o.RequireHttpsMetadata = false;
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -48,9 +68,8 @@ namespace ProductsService
                 });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("PublicSecure", policy => policy.RequireClaim("client_id", "secret_client_id"));
+                options.AddPolicy("PublicSecure", policy => policy.RequireClaim("client_id"));
             });
-            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

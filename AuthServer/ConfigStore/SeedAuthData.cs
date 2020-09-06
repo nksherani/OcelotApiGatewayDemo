@@ -38,7 +38,15 @@ namespace AuthServer.ConfigStore
             var scope = new ApiScope(name: "openid", displayName: "Read your data.");
             ScopeEntity scopeEntity = new ScopeEntity() { ApiScopeName = "openid", ApiScopeData = JsonConvert.SerializeObject(scope) };
             context.Add(clientEntity);
-            //context.AddRange(Config.GetIdentityResources());
+
+            IdentityResource identityResource = new IdentityResource();
+            identityResource.Name = "naveed";
+            identityResource.DisplayName = "naveed";
+            identityResource.UserClaims = new List<string>() { "role" };
+
+            var identityResourceEntity = new IdentityResourceEntity() { ID = "naveed", IdentityResourceName = "naveed", IdentityResourceData = JsonConvert.SerializeObject(identityResource) };
+
+            context.Add(identityResourceEntity);
             context.Add(resourceEntity);
             context.Add(scopeEntity);
             context.SaveChanges();

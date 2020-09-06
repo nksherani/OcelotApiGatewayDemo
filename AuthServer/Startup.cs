@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using IdentityServer4.Stores;
 using System.IO;
+using Microsoft.AspNetCore.Identity;
 
 namespace AuthServer
 {
@@ -31,36 +32,23 @@ namespace AuthServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddIdentityServer().AddDeveloperSigningCredential().AddOperationalStore(options =>
-            //{
-            //    options.EnableTokenCleanup = true;
-            //    options.TokenCleanupInterval = 3600;
-            //})
-
-            //    .AddInMemoryApiScopes(Config.GetApiScopes())
-            //    .AddInMemoryApiResources(Config.GetApiResources())
-            //    .AddInMemoryClients(Config.GetClients());
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-
-            //services.AddDbContext<ConfigurationStoreContext>(options =>
-            //    options.UseSqlServer(
-            //        Configuration.GetConnectionString("DefaultConnection"),
-            //        b => b.MigrationsAssembly(migrationsAssembly)
-            //        )
-            //    );
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            File.WriteAllText("log", connectionString);
             services.AddDbContextPool<ConfigurationStoreContext>(o => o.UseSqlServer(connectionString));
 
             services.AddTransient<IClientStore, ClientStore>();
             services.AddTransient<IResourceStore, ResourceStore>();
 
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ConfigurationStoreContext>()
+                .AddDefaultTokenProviders();
+
             services.AddIdentityServer()
                 //.AddSigningCredential(cert)
                 .AddDeveloperSigningCredential()
                 .AddResourceStore<ResourceStore>()
-                .AddClientStore<ClientStore>();
-            //.AddAspNetIdentity<ApplicationUser>()
+                .AddClientStore<ClientStore>()
+
+                .AddAspNetIdentity<ApplicationUser>();
             //.AddProfileService<IdentityWithAdditionalClaimsProfileService>();
             services.AddControllers();
 
@@ -75,7 +63,7 @@ namespace AuthServer
             }
 
             //app.UseHttpsRedirection();
-            
+
             app.UseIdentityServer();
             app.UseRouting();
 
