@@ -24,6 +24,7 @@ namespace AuthServer.ConfigStore
                 //Claims = {new ClientClaim("aud","myresourceapi")}
 
             };
+            client.AllowedGrantTypes.Add(GrantType.ResourceOwnerPassword);
             ClientEntity clientEntity = new ClientEntity() { ClientId = "secret_client_id", ClientData = JsonConvert.SerializeObject(client) };
 
             ApiResource resource = new ApiResource();

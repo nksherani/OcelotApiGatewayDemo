@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using IdentityServer4.Stores;
 using System.IO;
 using Microsoft.AspNetCore.Identity;
+using AuthServer.Services;
 
 namespace AuthServer
 {
@@ -38,7 +39,12 @@ namespace AuthServer
             services.AddTransient<IClientStore, ClientStore>();
             services.AddTransient<IResourceStore, ResourceStore>();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddSingleton<IEmailSender,EmailSender>();
+            
+            services.AddIdentity<ApplicationUser, IdentityRole>(o=> {
+                o.Password.RequireUppercase = false;
+                o.Password.RequireNonAlphanumeric = false;
+            })
                 .AddEntityFrameworkStores<ConfigurationStoreContext>()
                 .AddDefaultTokenProviders();
 
@@ -47,7 +53,7 @@ namespace AuthServer
                 .AddDeveloperSigningCredential()
                 .AddResourceStore<ResourceStore>()
                 .AddClientStore<ClientStore>()
-
+                
                 .AddAspNetIdentity<ApplicationUser>();
             //.AddProfileService<IdentityWithAdditionalClaimsProfileService>();
             services.AddControllers();
@@ -67,7 +73,7 @@ namespace AuthServer
             app.UseIdentityServer();
             app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

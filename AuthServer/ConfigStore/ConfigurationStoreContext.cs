@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace AuthServer.ConfigStore
 {
 
-    public class ConfigurationStoreContext : IdentityDbContext
+    public class ConfigurationStoreContext : IdentityDbContext<ApplicationUser>
     {
         public ConfigurationStoreContext(DbContextOptions<ConfigurationStoreContext> options) : base(options)
         { 
