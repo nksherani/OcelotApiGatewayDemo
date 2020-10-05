@@ -19,8 +19,8 @@ namespace AuthServer.ConfigStore
                 ClientName = "abc",
                 AllowedGrantTypes = GrantTypes.ClientCredentials,
                 ClientSecrets = new List<Secret> { new Secret("secret".Sha256()) }, // change me!
-                AllowedScopes = { "openid", "read" },
-
+                AllowedScopes = { "openid", "read", "offline_access" },
+                AllowOfflineAccess = true
                 //Claims = {new ClientClaim("aud","myresourceapi")}
 
             };
@@ -32,12 +32,18 @@ namespace AuthServer.ConfigStore
             resource.DisplayName = "myresourceapi";
             resource.Description = "myresourceapi";
             //resource.Properties.Add("aud", "https://localhost:443");
-            resource.Scopes = new List<string> { "myresourceapi.openid" };
+            resource.Scopes = new List<string> { "myresourceapi.openid", "myresourceapi.read" };
 
             ApiResourceEntity resourceEntity = new ApiResourceEntity() { ApiResourceName = "myresourceapi", ApiResourceData = JsonConvert.SerializeObject(resource) };
 
+            List<ScopeEntity> scopesList = new List<ScopeEntity>();
             var scope = new ApiScope(name: "openid", displayName: "Read your data.");
             ScopeEntity scopeEntity = new ScopeEntity() { ApiScopeName = "openid", ApiScopeData = JsonConvert.SerializeObject(scope) };
+            scopesList.Add(scopeEntity);
+            var scope2 = new ApiScope(name: "read", displayName: "Read your data.");
+            ScopeEntity scopeEntity2 = new ScopeEntity() { ApiScopeName = "read", ApiScopeData = JsonConvert.SerializeObject(scope2) };
+            scopesList.Add(scopeEntity2);
+            
             context.Add(clientEntity);
 
             IdentityResource identityResource = new IdentityResource();
@@ -50,7 +56,8 @@ namespace AuthServer.ConfigStore
 
             context.Add(identityResourceEntity);
             context.Add(resourceEntity);
-            context.Add(scopeEntity);
+            context.AddRange(scopesList);
+            
             context.SaveChanges();
         }
     }

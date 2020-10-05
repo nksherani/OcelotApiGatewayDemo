@@ -20,7 +20,7 @@ namespace AuthServer.ConfigStore
         public DbSet<ApiResourceEntity> ApiResources { get; set; }
         public DbSet<IdentityResourceEntity> IdentityResources { get; set; }
         public DbSet<ScopeEntity> Scopes { get; set; }
-        //public DbSet<IdentityUser> Users { get; set; }
+        //public DbSet<ApplicationUser> Users { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

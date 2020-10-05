@@ -62,10 +62,10 @@ namespace ProductsService
                     o.RequireHttpsMetadata = false;
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuerSigningKey = true,
+                        ValidateIssuerSigningKey = false,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("somethingyouwantwhichissecurewillworkk")),
                         ValidateIssuer = true,
-                        ValidateAudience = true
+                        ValidateAudience = false
                     };
                 });
             services.AddAuthorization(options =>

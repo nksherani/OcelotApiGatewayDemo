@@ -53,7 +53,8 @@ namespace AuthServer
                 .AddDeveloperSigningCredential()
                 .AddResourceStore<ResourceStore>()
                 .AddClientStore<ClientStore>()
-                
+                        //.AddProfileService<ProfileService>()
+
                 .AddAspNetIdentity<ApplicationUser>();
             //.AddProfileService<IdentityWithAdditionalClaimsProfileService>();
             services.AddControllers();
