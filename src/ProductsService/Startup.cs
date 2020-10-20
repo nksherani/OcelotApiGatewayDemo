@@ -41,24 +41,19 @@ namespace ProductsService
 
             //services.AddDbContextPool<ConfigurationStoreContext>(o => o.UseSqlServer(connectionString));
 
-            AddAuthentication(services);
+            //AddAuthentication(services);
             services.AddControllers();
-        }
-
-        private void AddAuthentication(IServiceCollection services)
-        {
-            
+            var authenticationProviderKey = "IdentityApiKey";
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            })
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(o =>
                 {
-                    //o.Authority = "https://localhost:44311";//auth server address
+                    o.Authority = "https://localhost:44311";//auth server address
                     o.Authority = customConfiguration.TokenAuthority;
-                    o.Audience = "ProductsApi";//not used to validate
+                    o.Audience = "GatewayApi";//not used to validate
                     o.RequireHttpsMetadata = false;
                     o.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -68,12 +63,9 @@ namespace ProductsService
                         ValidateAudience = false
                     };
                 });
-            services.AddAuthorization(options =>
-            {
-                //options.AddPolicy("PublicSecure1", policy => policy.RequireClaim("client_id"));
-                options.AddPolicy("PublicSecure2", policy => policy.RequireClaim(ClaimTypes.Email));
-            });
         }
+
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
